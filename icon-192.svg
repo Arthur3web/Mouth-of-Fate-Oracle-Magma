@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="192" height="192">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="65%" r="65%">
+      <stop offset="0%" stop-color="#ffaa22"/>
+      <stop offset="55%" stop-color="#c43400"/>
+      <stop offset="100%" stop-color="#1a0500"/>
+    </radialGradient>
+    <radialGradient id="crater" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffaa"/>
+      <stop offset="60%" stop-color="#ff7a00"/>
+      <stop offset="100%" stop-color="#a01000"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <path d="M 40 470 L 200 200 Q 256 130 312 200 L 472 470 Z" fill="#1c0700" opacity="0.92"/>
+  <ellipse cx="256" cy="200" rx="68" ry="16" fill="url(#crater)"/>
+  <path d="M 224 198 Q 232 120 246 80 Q 252 130 260 90 Q 268 130 280 100 Q 286 150 290 198 Z" fill="#ffb733" opacity="0.95"/>
+  <path d="M 240 198 Q 246 150 256 130 Q 264 160 270 198 Z" fill="#fff2aa"/>
+  <circle cx="120" cy="430" r="8" fill="#ff8833" opacity="0.7"/>
+  <circle cx="400" cy="445" r="6" fill="#ffaa44" opacity="0.7"/>
+  <circle cx="350" cy="380" r="5" fill="#ff6600" opacity="0.6"/>
+</svg>
