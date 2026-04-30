@@ -85,7 +85,7 @@
         opacity: 0.95;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
       }
-      body.mode-display .qr-corner { display: block; }
+      body.mode-remote .qr-corner { display: block; }
       .qr-corner.dim {
         opacity: 0;
         pointer-events: none;
@@ -214,9 +214,10 @@
         return 'room-' + Math.random().toString(36).slice(2, 10);
       }
 
-      // первый запуск — устройство по умолчанию становится "Жерлом" с уникальным кодом
+      // первый запуск — устройство по умолчанию становится "Пультом" (хостом с QR);
+      // второе устройство сканирует QR и превращается в "Жерло" с предсказаниями.
       if (!role) {
-        role = 'display';
+        role = 'remote';
         localStorage.setItem('role', role);
       }
       if (!room) {
@@ -340,100 +341,80 @@
         }
 
         // ----- PeerJS -----
+        // Пульт = хост (показывает QR, ждёт подключений, шлёт предсказания)
+        // Жерло = клиент (сканирует QR, подключается к Пульту, отображает предсказания)
         const hostId = `mof-oracle-${room}-host`;
-        const myId = role === 'display' ? hostId : `mof-oracle-${room}-r-${Math.random().toString(36).slice(2, 8)}`;
+        const myId = role === 'remote'
+          ? hostId
+          : `mof-oracle-${room}-d-${Math.random().toString(36).slice(2, 8)}`;
         const peer = new Peer(myId, { debug: 1 });
+
+        const liveConns = new Set();
+        const qrCorner = document.getElementById('qrCorner');
+        const updateQrDim = () => {
+          if (qrCorner) qrCorner.classList.toggle('dim', liveConns.size > 0);
+        };
 
         peer.on('error', (err) => {
           console.warn('peer error', err);
-          if (err.type === 'unavailable-id' && role === 'display') {
+          if (err.type === 'unavailable-id' && role === 'remote') {
             setStatus('id занят, перезапуск…', 'err');
             setTimeout(() => location.reload(), 4000);
-          } else if (err.type === 'peer-unavailable' && role === 'remote') {
-            setStatus('жерло не в сети — жду…', 'err');
+          } else if (err.type === 'peer-unavailable' && role === 'display') {
+            console.log('[oracle] пульт не в сети — жду…');
             setTimeout(connectToHost, 3000);
           } else if (role === 'remote') {
             setStatus('ошибка: ' + err.type, 'err');
           }
         });
 
-        if (role === 'display') {
-          const qrCorner = document.getElementById('qrCorner');
+        if (role === 'remote') {
+          // === ПУЛЬТ: хост, кнопка, QR ===
           const qrRoomLabel = document.getElementById('qrRoom');
-          const remoteUrl = `${location.origin}${location.pathname}?mode=remote&room=${encodeURIComponent(room)}`;
-          qrRoomLabel.innerText = room;
+          const displayUrl = `${location.origin}${location.pathname}?mode=display&room=${encodeURIComponent(room)}`;
+          if (qrRoomLabel) qrRoomLabel.innerText = room;
 
           if (!window.QRious) {
             console.error('[oracle] QRious не загрузился — проверь сеть/блокировщики.');
-            qrCorner.style.display = 'none';
+            if (qrCorner) qrCorner.style.display = 'none';
           } else {
             try {
               new QRious({
                 element: document.getElementById('qrCanvas'),
-                value: remoteUrl,
+                value: displayUrl,
                 size: 340,
                 foreground: '#1a0500',
                 background: '#ffeecc',
                 level: 'M',
               });
-              console.log('[oracle] QR готов:', remoteUrl);
+              console.log('[oracle] QR готов:', displayUrl);
             } catch (err) {
               console.error('[oracle] QR ошибка:', err);
             }
           }
 
-          const liveConns = new Set();
-          const updateQrDim = () => {
-            qrCorner.classList.toggle('dim', liveConns.size > 0);
-          };
-
           peer.on('open', () => {
-            console.log('display ready, peer id:', peer.id);
+            setStatus('жду жерло — отсканируй QR');
           });
           peer.on('connection', (conn) => {
             conn.on('open', () => {
               liveConns.add(conn);
               updateQrDim();
+              setStatus('жерло подключено ✓', 'ok');
+              document.getElementById('getPredictionBtn').disabled = false;
             });
             conn.on('close', () => {
               liveConns.delete(conn);
               updateQrDim();
-            });
-            conn.on('data', (data) => {
-              if (data && data.type === 'prediction') {
-                playSound();
-                renderPrediction(data.text, data.count);
+              if (liveConns.size === 0) {
+                setStatus('жерло отключилось, жду…', 'err');
+                document.getElementById('getPredictionBtn').disabled = true;
               }
             });
           });
-        }
 
-        let activeConn = null;
-        function connectToHost() {
-          setStatus('ищу жерло…');
-          const conn = peer.connect(hostId, { reliable: true });
-          conn.on('open', () => {
-            activeConn = conn;
-            setStatus('подключено к жерлу ✓', 'ok');
-            document.getElementById('getPredictionBtn').disabled = false;
-          });
-          conn.on('close', () => {
-            activeConn = null;
-            document.getElementById('getPredictionBtn').disabled = true;
-            setStatus('связь потеряна, переподключаюсь…', 'err');
-            setTimeout(connectToHost, 2000);
-          });
-          conn.on('error', () => {
-            setStatus('ошибка связи', 'err');
-          });
-        }
-
-        if (role === 'remote') {
-          peer.on('open', () => {
-            connectToHost();
-          });
           document.getElementById('getPredictionBtn').addEventListener('click', () => {
-            if (!activeConn || !activeConn.open) {
+            if (liveConns.size === 0) {
               setStatus('нет связи с жерлом', 'err');
               return;
             }
@@ -442,11 +423,64 @@
             totalPredictions = nextCount;
             localStorage.setItem('totalPredictions', totalPredictions);
             totalCountEl.innerText = totalPredictions;
-            activeConn.send({ type: 'prediction', text, count: totalPredictions });
+            liveConns.forEach((conn) => {
+              if (conn.open) conn.send({ type: 'prediction', text, count: totalPredictions });
+            });
             playSound();
           });
         }
+
+        function connectToHost() {
+          console.log('[oracle] подключаюсь к пульту…');
+          const conn = peer.connect(hostId, { reliable: true });
+          conn.on('open', () => {
+            console.log('[oracle] подключено к пульту ✓');
+          });
+          conn.on('close', () => {
+            console.log('[oracle] связь потеряна, переподключаюсь…');
+            setTimeout(connectToHost, 2000);
+          });
+          conn.on('error', (e) => {
+            console.warn('[oracle] ошибка связи', e);
+          });
+          conn.on('data', (data) => {
+            if (data && data.type === 'prediction') {
+              playSound();
+              renderPrediction(data.text, data.count);
+            }
+          });
+        }
+
+        if (role === 'display') {
+          peer.on('open', () => {
+            connectToHost();
+          });
+        }
       }
+
+      // ============ ВИДЕО-ФОН ============
+      (function setupLavaVideo() {
+        const v = document.querySelector('.lava-bg');
+        if (!v) return;
+        v.addEventListener('loadeddata', () => console.log('[oracle] видео: данные загружены'));
+        v.addEventListener('canplay', () => console.log('[oracle] видео: готово к проигрыванию'));
+        v.addEventListener('playing', () => console.log('[oracle] видео: играет'));
+        v.addEventListener('error', () => {
+          const e = v.error;
+          console.error('[oracle] видео ошибка:', e ? `code=${e.code} ${e.message}` : '(unknown)');
+        });
+        v.addEventListener('stalled', () => console.warn('[oracle] видео: stalled'));
+        const tryPlay = () =>
+          v.play().then(
+            () => {},
+            (err) => console.warn('[oracle] play() отклонён:', err && err.message),
+          );
+        tryPlay();
+        // если браузер блокирует autoplay — стартуем по первому клику/тапу
+        const wake = () => tryPlay();
+        document.addEventListener('click', wake, { once: true });
+        document.addEventListener('touchstart', wake, { once: true, passive: true });
+      })();
 
       // ============ SERVICE WORKER ============
       if ('serviceWorker' in navigator) {
