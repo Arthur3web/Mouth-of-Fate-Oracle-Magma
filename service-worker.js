@@ -1,11 +1,10 @@
-const CACHE = 'oracle-v5';
+const CACHE = 'oracle-v7';
 const PRECACHE = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.svg',
   './icon-512.svg',
-  './lava.mp4',
 ];
 const CDN_LIBS = [
   'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js',
@@ -40,6 +39,9 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+  // видео и аудио всегда напрямую с сервера — Range-запросы и SW-кеш не дружат
+  if (req.destination === 'video' || req.destination === 'audio') return;
+  if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(url.pathname)) return;
   e.respondWith(
     (async () => {
       const cached = await caches.match(req);

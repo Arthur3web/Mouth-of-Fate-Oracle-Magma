@@ -86,7 +86,10 @@
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
       }
       body.mode-display .qr-corner { display: block; }
-      .qr-corner.dim { opacity: 0.25; }
+      .qr-corner.dim {
+        opacity: 0;
+        pointer-events: none;
+      }
       .qr-corner canvas {
         display: block;
         border-radius: 12px;
