@@ -158,39 +158,6 @@
       }
       .status.ok { color: #88ffaa; }
       .status.err { color: #ff8888; }
-      .role-switch {
-        margin-top: 18px;
-        font-size: 0.8rem;
-        opacity: 0.6;
-        background: none;
-        border: none;
-        color: inherit;
-        cursor: pointer;
-        text-decoration: underline;
-        font-family: inherit;
-      }
-
-      /* ---------- маленькая ссылка "сменить роль" в углу жерла ---------- */
-      .display-reset {
-        display: none;
-        position: fixed;
-        top: 16px;
-        left: 16px;
-        z-index: 10;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        border: none;
-        border-radius: 20px;
-        padding: 6px 14px;
-        font-family: 'Courier New', monospace;
-        font-size: 0.8rem;
-        color: #ffeecc;
-        opacity: 0.5;
-        cursor: pointer;
-      }
-      body.mode-display .display-reset { display: block; }
-      .display-reset:hover { opacity: 1; }
     </style>
   </head>
   <body>
@@ -216,11 +183,7 @@
       <button class="big" id="getPredictionBtn" disabled>🔮 ПРЕДСКАЗАНИЕ</button>
       <div class="counter">Всего: <span id="totalCount">0</span></div>
       <div class="status" id="status">соединение…</div>
-      <button class="role-switch" id="resetRole">сменить роль / код пары</button>
     </div>
-
-    <!-- сменить роль с жерла -->
-    <button class="display-reset" id="displayReset">сменить роль</button>
 
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
@@ -261,16 +224,6 @@
       document.body.className = 'mode-' + role;
       startApp();
 
-      // сменить роль / пересоздать пару
-      function resetAll() {
-        localStorage.removeItem('role');
-        localStorage.removeItem('room');
-        location.href = location.pathname;
-      }
-      const remoteResetBtn = document.getElementById('resetRole');
-      if (remoteResetBtn) remoteResetBtn.addEventListener('click', resetAll);
-      const displayResetBtn = document.getElementById('displayReset');
-      if (displayResetBtn) displayResetBtn.addEventListener('click', resetAll);
 
       // ============ ПРИЛОЖЕНИЕ ============
       function startApp() {
@@ -407,19 +360,22 @@
           const remoteUrl = `${location.origin}${location.pathname}?mode=remote&room=${encodeURIComponent(room)}`;
           qrRoomLabel.innerText = room;
 
-          if (window.QRious) {
+          if (!window.QRious) {
+            console.error('[oracle] QRious не загрузился — проверь сеть/блокировщики.');
+            qrCorner.style.display = 'none';
+          } else {
             try {
               new QRious({
                 element: document.getElementById('qrCanvas'),
                 value: remoteUrl,
-                size: 180,
-                padding: 4,
+                size: 340,
                 foreground: '#1a0500',
                 background: '#ffeecc',
                 level: 'M',
               });
+              console.log('[oracle] QR готов:', remoteUrl);
             } catch (err) {
-              console.warn('qr error', err);
+              console.error('[oracle] QR ошибка:', err);
             }
           }
 

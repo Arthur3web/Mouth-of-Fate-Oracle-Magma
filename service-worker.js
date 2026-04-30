@@ -1,4 +1,4 @@
-const CACHE = 'oracle-v4';
+const CACHE = 'oracle-v5';
 const PRECACHE = [
   './',
   './index.html',
@@ -38,6 +38,8 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
   e.respondWith(
     (async () => {
       const cached = await caches.match(req);
@@ -45,8 +47,10 @@ self.addEventListener('fetch', (e) => {
       try {
         const res = await fetch(req);
         if (res && res.ok && (res.type === 'basic' || res.type === 'cors')) {
-          const cache = await caches.open(CACHE);
-          cache.put(req, res.clone());
+          try {
+            const cache = await caches.open(CACHE);
+            await cache.put(req, res.clone());
+          } catch (_) {}
         }
         return res;
       } catch (_) {
