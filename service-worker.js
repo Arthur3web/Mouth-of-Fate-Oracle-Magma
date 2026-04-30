@@ -1,4 +1,4 @@
-const CACHE = 'oracle-v9';
+const CACHE = 'oracle-v11';
 const PRECACHE = [
   './',
   './index.html',

@@ -397,25 +397,31 @@
             setStatus('жду жерло — отсканируй QR');
           });
           peer.on('connection', (conn) => {
+            // QR прячем сразу — как только пришло соединение, не дожидаясь open
+            liveConns.add(conn);
+            updateQrDim();
+            setStatus('жерло подключилось…', 'ok');
+            document.getElementById('getPredictionBtn').disabled = false;
             conn.on('open', () => {
-              liveConns.add(conn);
-              updateQrDim();
               setStatus('жерло подключено ✓', 'ok');
-              document.getElementById('getPredictionBtn').disabled = false;
             });
-            conn.on('close', () => {
+            const cleanup = () => {
+              if (!liveConns.has(conn)) return;
               liveConns.delete(conn);
               updateQrDim();
               if (liveConns.size === 0) {
                 setStatus('жерло отключилось, жду…', 'err');
                 document.getElementById('getPredictionBtn').disabled = true;
               }
-            });
+            };
+            conn.on('close', cleanup);
+            conn.on('error', cleanup);
           });
 
           document.getElementById('getPredictionBtn').addEventListener('click', () => {
-            if (liveConns.size === 0) {
-              setStatus('нет связи с жерлом', 'err');
+            const openConns = Array.from(liveConns).filter((c) => c.open);
+            if (openConns.length === 0) {
+              setStatus('жерло ещё не готово…', 'err');
               return;
             }
             const nextCount = totalPredictions + 1;
@@ -423,9 +429,9 @@
             totalPredictions = nextCount;
             localStorage.setItem('totalPredictions', totalPredictions);
             totalCountEl.innerText = totalPredictions;
-            liveConns.forEach((conn) => {
-              if (conn.open) conn.send({ type: 'prediction', text, count: totalPredictions });
-            });
+            openConns.forEach((conn) =>
+              conn.send({ type: 'prediction', text, count: totalPredictions }),
+            );
             playSound();
           });
         }
@@ -483,9 +489,23 @@
       })();
 
       // ============ SERVICE WORKER ============
+      // Когда обновляется код, новый SW делает skipWaiting + clients.claim,
+      // и эта страница сама перезагружается, чтобы подхватить свежую версию.
       if ('serviceWorker' in navigator) {
+        const hadController = !!navigator.serviceWorker.controller;
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          if (!hadController) return; // первая регистрация — не перезагружаем
+          refreshing = true;
+          console.log('[oracle] новая версия SW, перезагружаюсь');
+          location.reload();
+        });
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('service-worker.js').catch(() => {});
+          navigator.serviceWorker
+            .register('service-worker.js')
+            .then((reg) => reg.update())
+            .catch(() => {});
         });
       }
     </script>
