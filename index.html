@@ -36,6 +36,72 @@
         z-index: -1;
       }
 
+      /* ---------- ЛЕНДИНГ: ВЫБОР РОЛИ ---------- */
+      .picker {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(8px) saturate(1.2);
+        -webkit-backdrop-filter: blur(8px) saturate(1.2);
+        border: 4px solid #000;
+        border-radius: 36px;
+        padding: 48px 56px;
+        max-width: 90vw;
+        text-align: center;
+        color: #ffdd99;
+        box-shadow: 0 0 80px rgba(255, 102, 0, 0.35);
+      }
+      body.mode-picker .picker { display: flex; }
+      .picker h1 {
+        margin: 0;
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-family: 'Courier New', monospace;
+        text-shadow: 0 0 14px #ff6600;
+      }
+      .picker p {
+        margin: 0;
+        opacity: 0.85;
+        font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+      }
+      .picker-buttons {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .role-btn {
+        font-family: 'Courier New', monospace;
+        font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+        padding: 28px 36px;
+        min-width: 220px;
+        background: #e35f21;
+        border: none;
+        border-radius: 60px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 6px 0 #722f0a;
+        transition: transform 0.05s linear, box-shadow 0.05s linear;
+      }
+      .role-btn:active {
+        transform: translateY(3px);
+        box-shadow: 0 3px 0 #722f0a;
+      }
+      .role-btn .role-emoji {
+        display: block;
+        font-size: 1.6em;
+        margin-bottom: 6px;
+      }
+      .role-btn .role-hint {
+        display: block;
+        font-size: 0.55em;
+        opacity: 0.85;
+        font-weight: normal;
+        margin-top: 6px;
+      }
+
       /* ---------- ЖЕРЛО (показ на планшете) ---------- */
       .frame {
         display: none;
@@ -64,47 +130,6 @@
         opacity: 0.35;
         font-style: italic;
         font-size: clamp(1rem, 2.2vw, 1.5rem);
-      }
-
-      /* ---------- QR-КОД для пары ---------- */
-      .qr-corner {
-        display: none;
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        background: rgba(0, 0, 0, 0.65);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        border: 2px solid #000;
-        border-radius: 24px;
-        padding: 14px;
-        text-align: center;
-        color: #ffeecc;
-        z-index: 10;
-        transition: opacity 0.6s ease;
-        opacity: 0.95;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-      }
-      body.mode-remote .qr-corner { display: block; }
-      .qr-corner.dim {
-        opacity: 0;
-        pointer-events: none;
-      }
-      .qr-corner canvas {
-        display: block;
-        border-radius: 12px;
-        background: #ffeecc;
-      }
-      .qr-corner .qr-label {
-        font-size: 0.85rem;
-        margin-top: 8px;
-        font-family: 'Courier New', monospace;
-        opacity: 0.9;
-      }
-      .qr-corner .qr-room {
-        font-size: 0.7rem;
-        margin-top: 2px;
-        opacity: 0.6;
       }
 
       /* ---------- ПУЛЬТ (ноутбук) ---------- */
@@ -161,6 +186,28 @@
       }
       .status.ok { color: #88ffaa; }
       .status.err { color: #ff8888; }
+
+      /* ---------- КНОПКА СМЕНЫ РОЛИ ---------- */
+      .switch-role {
+        display: none;
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        background: rgba(0, 0, 0, 0.55);
+        color: #ffdd99;
+        border: 1px solid rgba(255, 221, 153, 0.3);
+        border-radius: 20px;
+        padding: 8px 14px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        cursor: pointer;
+        z-index: 20;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+      }
+      .switch-role:hover { opacity: 1; }
+      body.mode-display .switch-role,
+      body.mode-remote .switch-role { display: block; }
     </style>
   </head>
   <body>
@@ -168,16 +215,27 @@
       <source src="lava.mp4" type="video/mp4" />
     </video>
 
+    <!-- ЛЕНДИНГ: выбор роли при первом заходе -->
+    <div class="picker">
+      <h1>🌋 ЖЕРЛО СУДЬБЫ 🌋</h1>
+      <p>Выбери роль для этого устройства</p>
+      <div class="picker-buttons">
+        <button class="role-btn" data-role="display">
+          <span class="role-emoji">🌋</span>
+          ЖЕРЛО
+          <span class="role-hint">показ предсказаний</span>
+        </button>
+        <button class="role-btn" data-role="remote">
+          <span class="role-emoji">🎛</span>
+          ПУЛЬТ
+          <span class="role-hint">управление кнопкой</span>
+        </button>
+      </div>
+    </div>
+
     <!-- ЖЕРЛО -->
     <div class="frame idle visible" id="frame">
       <span id="predictionText">…жерло судьбы спит…</span>
-    </div>
-
-    <!-- QR для пульта -->
-    <div class="qr-corner" id="qrCorner">
-      <canvas id="qrCanvas"></canvas>
-      <div class="qr-label">📱 СКАНИРУЙ → ПУЛЬТ</div>
-      <div class="qr-room" id="qrRoom"></div>
     </div>
 
     <!-- ПУЛЬТ -->
@@ -188,45 +246,58 @@
       <div class="status" id="status">соединение…</div>
     </div>
 
+    <!-- Сменить роль (видна в режимах display/remote) -->
+    <button class="switch-role" id="switchRoleBtn" title="сменить роль на этом устройстве">↻ сменить роль</button>
+
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
     <script>
-      // ============ РЕЖИМ ============
+      // ============ КОНФИГ ============
+      // Фиксированная комната — оба устройства автоматически в одной сессии.
+      // Если когда-нибудь понадобится несколько независимых установок,
+      // здесь можно сделать ручной ввод кода — но пока YAGNI.
+      const ROOM = 'mof-default';
+
+      // ============ ВЫБОР РОЛИ ============
       const params = new URLSearchParams(location.search);
+
+      // ?reset=1 — сбросить запомненную роль (на случай если перепутал устройство)
       if (params.get('reset') === '1') {
         localStorage.removeItem('role');
-        localStorage.removeItem('room');
       }
 
-      function sanitizeRoom(s) {
-        return (s || '').toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').slice(0, 40);
+      // ?role=display|remote — переопределяет выбор и сохраняет.
+      // Удобно для закладок / PWA-ярлыков на главном экране.
+      const urlRole = params.get('role');
+      if (urlRole === 'display' || urlRole === 'remote') {
+        localStorage.setItem('role', urlRole);
       }
 
-      const urlMode = params.get('mode');
-      const urlRoom = params.get('room');
-      // если попали по QR-ссылке — запоминаем роль и комнату на этом устройстве
-      if (urlMode === 'display' || urlMode === 'remote') localStorage.setItem('role', urlMode);
-      if (urlRoom) localStorage.setItem('room', sanitizeRoom(urlRoom));
       let role = localStorage.getItem('role') || '';
-      let room = localStorage.getItem('room') || '';
 
-      function generateRoom() {
-        return 'room-' + Math.random().toString(36).slice(2, 10);
-      }
-
-      // первый запуск — устройство по умолчанию становится "Пультом" (хостом с QR);
-      // второе устройство сканирует QR и превращается в "Жерло" с предсказаниями.
       if (!role) {
-        role = 'remote';
-        localStorage.setItem('role', role);
+        // Лендинг — ждём клика по «Жерло» или «Пульт»
+        document.body.className = 'mode-picker';
+        document.querySelectorAll('.role-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const chosen = btn.getAttribute('data-role');
+            localStorage.setItem('role', chosen);
+            location.reload();
+          });
+        });
+      } else {
+        document.body.className = 'mode-' + role;
+        startApp();
       }
-      if (!room) {
-        room = generateRoom();
-        localStorage.setItem('room', room);
+
+      // Кнопка «сменить роль» — доступна в обоих рабочих режимах
+      const switchBtn = document.getElementById('switchRoleBtn');
+      if (switchBtn) {
+        switchBtn.addEventListener('click', () => {
+          if (!confirm('Сменить роль этого устройства?')) return;
+          localStorage.removeItem('role');
+          location.href = location.pathname;
+        });
       }
-      room = sanitizeRoom(room);
-      document.body.className = 'mode-' + role;
-      startApp();
 
 
       // ============ ПРИЛОЖЕНИЕ ============
@@ -341,25 +412,23 @@
         }
 
         // ----- PeerJS -----
-        // Пульт = хост (показывает QR, ждёт подключений, шлёт предсказания)
-        // Жерло = клиент (сканирует QR, подключается к Пульту, отображает предсказания)
-        const hostId = `mof-oracle-${room}-host`;
+        // Пульт = хост, Жерло = клиент. Оба знают фиксированный hostId по ROOM.
+        const hostId = `mof-oracle-${ROOM}-host`;
         const myId = role === 'remote'
           ? hostId
-          : `mof-oracle-${room}-d-${Math.random().toString(36).slice(2, 8)}`;
+          : `mof-oracle-${ROOM}-d-${Math.random().toString(36).slice(2, 8)}`;
         const peer = new Peer(myId, { debug: 1 });
 
         const liveConns = new Set();
-        const qrCorner = document.getElementById('qrCorner');
-        const updateQrDim = () => {
-          if (qrCorner) qrCorner.classList.toggle('dim', liveConns.size > 0);
-        };
 
         peer.on('error', (err) => {
           console.warn('peer error', err);
           if (err.type === 'unavailable-id' && role === 'remote') {
-            setStatus('id занят, перезапуск…', 'err');
-            setTimeout(() => location.reload(), 4000);
+            // Кто-то уже занял Пульта в этой комнате.
+            // Возможно, второе устройство тоже выбрало «Пульт» по ошибке —
+            // даём осмысленное сообщение вместо тихого reload.
+            setStatus('пульт уже занят другим устройством', 'err');
+            setTimeout(() => location.reload(), 6000);
           } else if (err.type === 'peer-unavailable' && role === 'display') {
             console.log('[oracle] пульт не в сети — жду…');
             setTimeout(connectToHost, 3000);
@@ -369,37 +438,12 @@
         });
 
         if (role === 'remote') {
-          // === ПУЛЬТ: хост, кнопка, QR ===
-          const qrRoomLabel = document.getElementById('qrRoom');
-          const displayUrl = `${location.origin}${location.pathname}?mode=display&room=${encodeURIComponent(room)}`;
-          if (qrRoomLabel) qrRoomLabel.innerText = room;
-
-          if (!window.QRious) {
-            console.error('[oracle] QRious не загрузился — проверь сеть/блокировщики.');
-            if (qrCorner) qrCorner.style.display = 'none';
-          } else {
-            try {
-              new QRious({
-                element: document.getElementById('qrCanvas'),
-                value: displayUrl,
-                size: 340,
-                foreground: '#1a0500',
-                background: '#ffeecc',
-                level: 'M',
-              });
-              console.log('[oracle] QR готов:', displayUrl);
-            } catch (err) {
-              console.error('[oracle] QR ошибка:', err);
-            }
-          }
-
+          // === ПУЛЬТ: хост, кнопка, ждёт жерла ===
           peer.on('open', () => {
-            setStatus('жду жерло — отсканируй QR');
+            setStatus('жду жерло…');
           });
           peer.on('connection', (conn) => {
-            // QR прячем сразу — как только пришло соединение, не дожидаясь open
             liveConns.add(conn);
-            updateQrDim();
             setStatus('жерло подключилось…', 'ok');
             document.getElementById('getPredictionBtn').disabled = false;
             conn.on('open', () => {
@@ -408,7 +452,6 @@
             const cleanup = () => {
               if (!liveConns.has(conn)) return;
               liveConns.delete(conn);
-              updateQrDim();
               if (liveConns.size === 0) {
                 setStatus('жерло отключилось, жду…', 'err');
                 document.getElementById('getPredictionBtn').disabled = true;

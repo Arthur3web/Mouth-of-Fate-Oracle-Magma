@@ -1,4 +1,4 @@
-const CACHE = 'oracle-v11';
+const CACHE = 'oracle-v12';
 const PRECACHE = [
   './',
   './index.html',
@@ -8,7 +8,6 @@ const PRECACHE = [
 ];
 const CDN_LIBS = [
   'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js',
-  'https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js',
 ];
 
 self.addEventListener('install', (e) => {
