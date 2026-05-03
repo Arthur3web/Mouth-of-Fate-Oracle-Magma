@@ -117,7 +117,23 @@ function startApp() {
     10,
   );
   const totalCountEl = document.getElementById("totalCount");
-  if (totalCountEl) totalCountEl.innerText = totalPredictions;
+  const totalNounEl = document.getElementById("totalNoun");
+
+  function pluralPeople(n) {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod100 >= 11 && mod100 <= 14) return "человек";
+    if (mod10 === 1) return "человек";
+    if (mod10 >= 2 && mod10 <= 4) return "человека";
+    return "человек";
+  }
+
+  function setTotalCount(n) {
+    if (totalCountEl) totalCountEl.innerText = n;
+    if (totalNounEl) totalNounEl.innerText = pluralPeople(n);
+  }
+
+  setTotalCount(totalPredictions);
 
   // ----- показ -----
   const frame = document.getElementById("frame");
@@ -127,7 +143,7 @@ function startApp() {
     if (typeof count === "number") {
       totalPredictions = count;
       localStorage.setItem("totalPredictions", totalPredictions);
-      if (totalCountEl) totalCountEl.innerText = totalPredictions;
+      setTotalCount(totalPredictions);
     }
     frame.classList.remove("visible");
     frame.classList.remove("idle");
@@ -236,7 +252,7 @@ function startApp() {
         const text = getRandomPrediction(nextCount);
         totalPredictions = nextCount;
         localStorage.setItem("totalPredictions", totalPredictions);
-        totalCountEl.innerText = totalPredictions;
+        setTotalCount(totalPredictions);
         openConns.forEach((conn) =>
           conn.send({
             type: "prediction",

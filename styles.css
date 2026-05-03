@@ -63,9 +63,9 @@ body {
   background: rgba(20, 14, 8, 0.55);
   backdrop-filter: blur(3px) saturate(1.2);
   -webkit-backdrop-filter: blur(3px) saturate(1.2);
-  border: 6px solid #000;
-  border-radius: 36px;
-  padding: 60px 80px;
+  border: clamp(3px, 0.3vw, 6px) solid #000;
+  border-radius: clamp(20px, 1.8vw, 36px);
+  padding: clamp(24px, 3vw, 60px) clamp(28px, 4vw, 80px);
   max-width: 78vw;
   text-align: center;
   color: #f5e9d6;
@@ -100,6 +100,7 @@ body.mode-display .frame {
 /* ---------- ПУЛЬТ (ноутбук) ---------- */
 
 body.mode-remote {
+  display: block;
   background-image: url("images/icon-1.png");
   background-size: cover;
   background-position: center;
@@ -112,43 +113,39 @@ body.mode-remote .lava-bg {
 
 .remote-panel {
   display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
 }
 
 body.mode-remote .remote-panel {
-  display: flex;
+  display: block;
 }
 
 .remote-panel h1 {
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
-  font-size: 156px;
+  font-size: clamp(2.25rem, 7.6vw, 156px);
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0;
-  margin: 320px 0 0 0;
+  margin: clamp(32px, 15.6vw, 320px) 0 0 0;
 }
 
 button.big {
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
   font-style: Light;
-  font-size: 48px;
-  line-height: 60px;
+  font-size: clamp(1.125rem, 2.35vw, 48px);
+  line-height: 1.25;
   letter-spacing: 0;
   text-align: center;
   text-transform: uppercase;
   background: #ff7a1b;
   color: #111;
-  width: 580px;
-  height: 180px;
-  top: 1038px;
-  left: 990px;
+  width: clamp(220px, 28vw, 580px);
+  height: clamp(64px, 8.8vw, 180px);
   border-radius: 300px;
   opacity: 1;
-  margin-bottom: 204px;
+  margin-bottom: clamp(40px, 10vw, 204px);
   transition:
     transform 0.05s linear,
     box-shadow 0.05s linear;
@@ -168,31 +165,31 @@ button.big:disabled {
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
   font-style: Light;
-  font-size: 80px;
-  line-height: 92px;
+  font-size: clamp(1.125rem, 3.9vw, 80px);
+  line-height: 1.15;
   letter-spacing: 0;
   text-align: center;
-  margin-bottom: 160px;
-  width: 1624px;
+  margin-bottom: clamp(32px, 7.8vw, 160px);
+  width: min(1624px, 92vw);
 }
 
 .counter {
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
-  font-size: 48px;
-  line-height: 78px;
+  font-size: clamp(1rem, 2.35vw, 48px);
+  line-height: 1.6;
   letter-spacing: 0;
   text-align: center;
   opacity: 0.85;
-  margin-bottom: 100px;
+  margin-bottom: clamp(24px, 4.9vw, 100px);
 }
 
 .status {
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
   font-style: Light;
-  font-size: 36px;
-  line-height: 78px;
+  font-size: clamp(0.875rem, 1.75vw, 36px);
+  line-height: 1.6;
   letter-spacing: 0;
   text-align: center;
 
@@ -230,40 +227,50 @@ body.mode-remote .switch-role {
 
 .menu-btn {
   position: fixed;
-  top: 100px;
-  right: 100px;
-  width: 68px;
-  height: 16px;
+  top: max(env(safe-area-inset-top, 0px), clamp(16px, 4.9vw, 100px));
+  right: max(env(safe-area-inset-right, 0px), clamp(16px, 4.9vw, 100px));
+  width: clamp(28px, 3.3vw, 68px);
+  height: clamp(8px, 0.8vw, 16px);
   cursor: pointer;
   background-color: inherit;
   border: none;
   opacity: 1;
+  z-index: 30;
+}
+
+.menu-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .menu {
   position: fixed;
-  right: 100px;
+  right: clamp(16px, 4.9vw, 100px);
   display: none;
   flex-direction: column;
-  gap: 60px;
+  gap: clamp(16px, 2.95vw, 60px);
   background: #212121;
-  width: 400px;
-  height: 730px;
+  width: clamp(220px, 19.5vw, 400px);
+  height: auto;
+  max-height: calc(100vh - clamp(80px, 12vw, 200px));
+  padding-bottom: clamp(24px, 3.9vw, 80px);
   opacity: 1;
-  top: 176px;
-  border-radius: 50px;
+  top: clamp(56px, 8.6vw, 176px);
+  border-radius: clamp(24px, 2.4vw, 50px);
   align-items: center;
+  z-index: 25;
 }
 
 .menu-title {
-  width: 400px;
-  height: 60px;
+  width: 100%;
+  height: auto;
   opacity: 1;
-  margin-top: 80px;
+  margin-top: clamp(24px, 3.9vw, 80px);
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
-  font-size: 36px;
-  line-height: 60px;
+  font-size: clamp(1rem, 1.75vw, 36px);
+  line-height: 1.5;
   letter-spacing: 0;
   text-align: center;
   text-transform: uppercase;
@@ -272,14 +279,15 @@ body.mode-remote .switch-role {
 
 .menu-option,
 .menu-clear {
-  width: 320px;
-  height: 120px;
+  width: clamp(160px, 15.6vw, 320px);
+  height: clamp(48px, 5.85vw, 120px);
   opacity: 1;
+  border: none;
   border-radius: 300px;
   cursor: pointer;
   font-family: "BaskervilleCustom", serif;
-  font-size: 48px;
-  line-height: 60px;
+  font-size: clamp(1rem, 2.35vw, 48px);
+  line-height: 1.25;
   letter-spacing: 0;
   text-align: center;
   text-transform: uppercase;
@@ -308,8 +316,8 @@ body.mode-remote .switch-role {
   background: #adadad;
   color: #000000;
   font-family: "BaskervilleCustom", serif;
-  font-size: 32px;
-  line-height: 60px;
+  font-size: clamp(0.875rem, 1.55vw, 32px);
+  line-height: 1.5;
   letter-spacing: 0;
   text-align: center;
   text-transform: uppercase;
