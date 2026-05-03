@@ -185,7 +185,7 @@ function startApp() {
     } else if (state === "connected") {
       setStatus("Оракул проснулся...", "ok");
     } else if (state === "ready") {
-      setStatus("Оракул ждёт гостя в тишине...", "ok");
+      setStatus("Оракул ожидает гостя...", "ok");
     }
   }
 

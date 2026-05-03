@@ -205,34 +205,6 @@ body.mode-remote .counter {
   color: #ff7a1b;
 }
 
-/* ---------- КНОПКА СМЕНЫ РОЛИ ---------- */
-.switch-role {
-  display: none;
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  background: rgba(0, 0, 0, 0.55);
-  color: #ffdd99;
-  border: 1px solid rgba(255, 221, 153, 0.3);
-  border-radius: 20px;
-  padding: 8px 14px;
-  font-family: "Courier New", monospace;
-  font-size: 0.85rem;
-  cursor: pointer;
-  z-index: 20;
-  opacity: 0.6;
-  transition: opacity 0.2s;
-}
-
-.switch-role:hover {
-  opacity: 1;
-}
-
-body.mode-display .switch-role,
-body.mode-remote .switch-role {
-  display: block;
-}
-
 .menu-btn {
   position: fixed;
   top: max(env(safe-area-inset-top, 0px), clamp(12px, 3vw, 48px));
@@ -318,13 +290,20 @@ body.mode-remote .switch-role {
 .menu-option.active {
   background: #ffffff;
   color: #111;
-  font-weight: 300;
-  border: 1px solid rgba(255, 122, 27, 0.35);
+
+  box-shadow:
+    0 0 18px rgba(255, 122, 27, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.35) inset;
+
+  transform: scale(1.02);
+
+  pointer-events: none;
+  cursor: default;
 }
 
 .menu-clear {
   background: #adadad;
-  color: #000000;
+  color: #111;
   font-family: "BaskervilleCustom", serif;
   font-size: clamp(0.875rem, 1.55vw, 32px);
   line-height: 1.5;
