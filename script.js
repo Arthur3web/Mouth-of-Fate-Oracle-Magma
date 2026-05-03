@@ -19,7 +19,7 @@ if (urlRole === "display" || urlRole === "remote") {
   localStorage.setItem("role", urlRole);
 }
 
-let role = localStorage.getItem("role") || "remote";
+let role = localStorage.getItem("role") || "display";
 
 if (!role) {
   // Лендинг — ждём клика по «Жерло» или «Пульт»
@@ -283,8 +283,21 @@ function startApp() {
     location.reload();
   });
 
-  clearCacheBtn.addEventListener("click", () => {
-    localStorage.removeItem("totalPredictions");
+  clearCacheBtn.addEventListener("click", async () => {
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+      if (window.caches) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      }
+      if (navigator.serviceWorker) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map((r) => r.unregister()));
+      }
+    } catch (e) {
+      console.warn("[oracle] не удалось полностью очистить кэш", e);
+    }
     location.href = location.pathname;
   });
 

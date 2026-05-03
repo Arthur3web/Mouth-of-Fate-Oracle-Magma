@@ -111,10 +111,14 @@ body.mode-remote .lava-bg {
 }
 
 .remote-panel {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+body.mode-remote .remote-panel {
+  display: flex;
 }
 
 .remote-panel h1 {
