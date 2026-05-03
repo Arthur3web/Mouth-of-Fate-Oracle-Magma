@@ -1,0 +1,348 @@
+// ============ КОНФИГ ============
+// Фиксированная комната — оба устройства автоматически в одной сессии.
+// Если когда-нибудь понадобится несколько независимых установок,
+// здесь можно сделать ручной ввод кода — но пока YAGNI.
+const ROOM = "mof-default";
+
+// ============ ВЫБОР РОЛИ ============
+const params = new URLSearchParams(location.search);
+
+// ?reset=1 — сбросить запомненную роль (на случай если перепутал устройство)
+if (params.get("reset") === "1") {
+  localStorage.removeItem("role");
+}
+
+// ?role=display|remote — переопределяет выбор и сохраняет.
+// Удобно для закладок / PWA-ярлыков на главном экране.
+const urlRole = params.get("role");
+if (urlRole === "display" || urlRole === "remote") {
+  localStorage.setItem("role", urlRole);
+}
+
+let role = localStorage.getItem("role") || "";
+
+if (!role) {
+  // Лендинг — ждём клика по «Жерло» или «Пульт»
+  document.body.className = "mode-picker";
+  document.querySelectorAll(".role-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const chosen = btn.getAttribute("data-role");
+      localStorage.setItem("role", chosen);
+      location.reload();
+    });
+  });
+} else {
+  document.body.className = "mode-" + role;
+  startApp();
+}
+
+// Кнопка «сменить роль» — доступна в обоих рабочих режимах
+const switchBtn = document.getElementById("switchRoleBtn");
+if (switchBtn) {
+  switchBtn.addEventListener("click", () => {
+    if (!confirm("Сменить роль этого устройства?")) return;
+    localStorage.removeItem("role");
+    location.href = location.pathname;
+  });
+}
+
+// ============ ПРИЛОЖЕНИЕ ============
+function startApp() {
+  // ----- предсказания -----
+  const calmPredictions = [
+    "🌊 Судьба течёт спокойно — доверься времени.",
+    "🌱 Сегодня рост начинается с малого шага.",
+    "☀️ Светлый путь уже открыт перед тобой.",
+    "🍃 Ветер перемен мягко коснётся твоей жизни.",
+    "🕊 Мир внутри тебя станет главным ответом.",
+    "🌸 Терпение принесёт неожиданный дар.",
+    "💧 Даже капля способна изменить камень.",
+    "🌙 Луна хранит для тебя тихую удачу.",
+    "🌿 Новое начнётся без лишнего шума.",
+    "✨ Судьба благосклонна к спокойным сердцам.",
+    "Ветер переменится.\nПока не время.",
+  ];
+  const activePredictions = [
+    "🔥 Судьба советует рискнуть.",
+    "⚡ Действуй сейчас — момент силы пришёл.",
+    "🌋 Твоя энергия способна изменить ход событий.",
+    "🌀 Решение близко, не бойся перемен.",
+    "💥 Из искры родится великое.",
+    "🚪 Откроется дверь, которую ты не замечал.",
+    "🎯 Сегодня выбор особенно важен.",
+    "🌟 Удача любит смелых.",
+    "🔮 Перемены уже начались.",
+    "🌄 Ты стоишь у нового рубежа.",
+  ];
+  const mysticalPredictions = [
+    "👁 Око вулкана видит твою скрытую истину.",
+    "🌑 Тень прошлого должна быть отпущена.",
+    "🩸 Лава очищает старую судьбу.",
+    "🌠 Сегодня реальность может треснуть.",
+    "🕯 Тайный знак уже был дан.",
+    "🧿 Смотри внимательнее: судьба говорит символами.",
+    "🌋 Глубины пробуждаются ради тебя.",
+    "⚖ Баланс нарушен — восстанови его.",
+    "🌀 Старый цикл завершён.",
+    "🔺 Вулкан избрал тебя свидетелем перемен.",
+  ];
+  const chaosPredictions = [
+    "💀 Судьба больше не шепчет — она кричит.",
+    "🌋 Извержение уже внутри тебя.",
+    "⚠ Грядущие перемены необратимы.",
+    "🔥 Мир вокруг изменится быстрее, чем ты ожидаешь.",
+    "👹 Хаос приносит новые возможности.",
+    "🌌 Реальность плавится под твоим выбором.",
+    "🩸 Судьба требует решительности.",
+    "⚡ Ты стал частью великого сдвига.",
+    "🕳 Бездна тоже даёт ответы.",
+    "🌋 Последний шаг определит всё.",
+  ];
+
+  function getPredictionPool(count) {
+    if (count < 50) return calmPredictions;
+    if (count < 150) return activePredictions;
+    if (count < 300) return mysticalPredictions;
+    return chaosPredictions;
+  }
+
+  function getRandomPrediction(count) {
+    const pool = getPredictionPool(count);
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  // ----- счётчик -----
+  let totalPredictions = parseInt(
+    localStorage.getItem("totalPredictions") || "0",
+    10,
+  );
+  const totalCountEl = document.getElementById("totalCount");
+  if (totalCountEl) totalCountEl.innerText = totalPredictions;
+
+  // ----- показ -----
+  const frame = document.getElementById("frame");
+  const predictionText = document.getElementById("predictionText");
+
+  function renderPrediction(text, count) {
+    if (typeof count === "number") {
+      totalPredictions = count;
+      localStorage.setItem("totalPredictions", totalPredictions);
+      if (totalCountEl) totalCountEl.innerText = totalPredictions;
+    }
+    frame.classList.remove("visible");
+    frame.classList.remove("idle");
+    void frame.offsetWidth;
+    predictionText.innerText = text;
+    frame.classList.add("visible");
+  }
+
+  // ----- звук -----
+  function playSound() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      const ctx = new Ctx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain).connect(ctx.destination);
+      osc.frequency.value = 120;
+      gain.gain.value = 0.15;
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.8);
+      osc.stop(ctx.currentTime + 0.8);
+      setTimeout(() => ctx.close(), 1000);
+    } catch (e) {}
+  }
+
+  // ----- статус -----
+  const statusEl = document.getElementById("status");
+  function setStatus(text, cls = "") {
+    if (!statusEl) return;
+    statusEl.className = "status " + cls;
+    statusEl.innerText = text;
+  }
+
+  // --- ОРАКУЛ: статусы подключения вулкана ---
+  function setOracleStatus(state) {
+    // state: 'no-connection', 'connected', 'ready'
+    if (state === "no-connection") {
+      setStatus("Нет соединения — Оракул спит", "err");
+    } else if (state === "connected") {
+      setStatus("Есть соединение — Оракул проснулся", "ok");
+    } else if (state === "ready") {
+      setStatus("Готов к работе — Оракул ждёт гостя", "ok");
+    }
+  }
+
+  // ----- PeerJS -----
+  // Пульт = хост, Жерло = клиент. Оба знают фиксированный hostId по ROOM.
+  const hostId = `mof-oracle-${ROOM}-host`;
+  const myId =
+    role === "remote"
+      ? hostId
+      : `mof-oracle-${ROOM}-d-${Math.random().toString(36).slice(2, 8)}`;
+  const peer = new Peer(myId, { debug: 1 });
+
+  const liveConns = new Set();
+
+  peer.on("error", (err) => {
+    console.warn("peer error", err);
+    if (err.type === "unavailable-id" && role === "remote") {
+      // Кто-то уже занял Пульта в этой комнате.
+      // Возможно, второе устройство тоже выбрало «Пульт» по ошибке —
+      // даём осмысленное сообщение вместо тихого reload.
+      setStatus("пульт уже занят другим устройством", "err");
+      setTimeout(() => location.reload(), 6000);
+    } else if (err.type === "peer-unavailable" && role === "display") {
+      console.log("[oracle] пульт не в сети — жду…");
+      setTimeout(connectToHost, 3000);
+    } else if (role === "remote") {
+      setStatus("ошибка: " + err.type, "err");
+    }
+  });
+
+  if (role === "remote") {
+    // === ПУЛЬТ: хост, кнопка, ждёт жерла ===
+    peer.on("open", () => {
+      setOracleStatus("no-connection");
+    });
+    peer.on("connection", (conn) => {
+      liveConns.add(conn);
+      setOracleStatus("connected");
+      document.getElementById("getPredictionBtn").disabled = false;
+      conn.on("open", () => {
+        setOracleStatus("ready");
+      });
+      const cleanup = () => {
+        if (!liveConns.has(conn)) return;
+        liveConns.delete(conn);
+        if (liveConns.size === 0) {
+          setOracleStatus("no-connection");
+          document.getElementById("getPredictionBtn").disabled = true;
+        }
+      };
+      conn.on("close", cleanup);
+      conn.on("error", cleanup);
+    });
+
+    document
+      .getElementById("getPredictionBtn")
+      .addEventListener("click", () => {
+        const openConns = Array.from(liveConns).filter((c) => c.open);
+        if (openConns.length === 0) {
+          setStatus("жерло ещё не готово…", "err");
+          return;
+        }
+        const nextCount = totalPredictions + 1;
+        const text = getRandomPrediction(nextCount);
+        totalPredictions = nextCount;
+        localStorage.setItem("totalPredictions", totalPredictions);
+        totalCountEl.innerText = totalPredictions;
+        openConns.forEach((conn) =>
+          conn.send({
+            type: "prediction",
+            text,
+            count: totalPredictions,
+          }),
+        );
+        playSound();
+      });
+
+    const menuBtn = document.getElementById("menuBtn");
+    const menu = document.getElementById("menu");
+
+    menuBtn.addEventListener("click", () => {
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    });
+
+    document.getElementById("reloadBtn").addEventListener("click", () => {
+      location.reload();
+    });
+
+    document.getElementById("switchRoleBtn").addEventListener("click", () => {
+      localStorage.removeItem("role");
+      location.href = location.pathname;
+    });
+  }
+
+  function connectToHost() {
+    console.log("[oracle] подключаюсь к пульту…");
+    const conn = peer.connect(hostId, { reliable: true });
+    conn.on("open", () => {
+      console.log("[oracle] подключено к пульту ✓");
+    });
+    conn.on("close", () => {
+      console.log("[oracle] связь потеряна, переподключаюсь…");
+      setTimeout(connectToHost, 2000);
+    });
+    conn.on("error", (e) => {
+      console.warn("[oracle] ошибка связи", e);
+    });
+    conn.on("data", (data) => {
+      if (data && data.type === "prediction") {
+        playSound();
+        renderPrediction(data.text, data.count);
+      }
+    });
+  }
+
+  if (role === "display") {
+    peer.on("open", () => {
+      connectToHost();
+    });
+  }
+}
+
+// ============ ВИДЕО-ФОН ============
+(function setupLavaVideo() {
+  const v = document.querySelector(".lava-bg");
+  if (!v) return;
+  v.addEventListener("loadeddata", () =>
+    console.log("[oracle] видео: данные загружены"),
+  );
+  v.addEventListener("canplay", () =>
+    console.log("[oracle] видео: готово к проигрыванию"),
+  );
+  v.addEventListener("playing", () => console.log("[oracle] видео: играет"));
+  v.addEventListener("error", () => {
+    const e = v.error;
+    console.error(
+      "[oracle] видео ошибка:",
+      e ? `code=${e.code} ${e.message}` : "(unknown)",
+    );
+  });
+  v.addEventListener("stalled", () => console.warn("[oracle] видео: stalled"));
+  const tryPlay = () =>
+    v.play().then(
+      () => {},
+      (err) => console.warn("[oracle] play() отклонён:", err && err.message),
+    );
+  tryPlay();
+  // если браузер блокирует autoplay — стартуем по первому клику/тапу
+  const wake = () => tryPlay();
+  document.addEventListener("click", wake, { once: true });
+  document.addEventListener("touchstart", wake, {
+    once: true,
+    passive: true,
+  });
+})();
+
+// ============ SERVICE WORKER ============
+// Когда обновляется код, новый SW делает skipWaiting + clients.claim,
+// и эта страница сама перезагружается, чтобы подхватить свежую версию.
+if ("serviceWorker" in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (refreshing) return;
+    if (!hadController) return; // первая регистрация — не перезагружаем
+    refreshing = true;
+    console.log("[oracle] новая версия SW, перезагружаюсь");
+    location.reload();
+  });
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("service-worker.js")
+      .then((reg) => reg.update())
+      .catch(() => {});
+  });
+}

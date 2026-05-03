@@ -1,0 +1,19 @@
+# Локальные файлы сервера разработки
+node_modules/
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Сервер разработки
+server.js
+run-local.sh
+run-local.bat
