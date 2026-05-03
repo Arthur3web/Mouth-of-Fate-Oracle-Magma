@@ -1,10 +1,13 @@
-const CACHE = 'oracle-v12';
+const CACHE = 'oracle-v13';
 const PRECACHE = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.svg',
-  './icon-512.svg',
+  './styles.css',
+  './script.js',
+  './images/icon-1.png',
+  './images/icon-192.svg',
+  './images/icon-512.svg',
 ];
 const CDN_LIBS = [
   'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js',

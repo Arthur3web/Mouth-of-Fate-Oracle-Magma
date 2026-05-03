@@ -19,7 +19,7 @@ if (urlRole === "display" || urlRole === "remote") {
   localStorage.setItem("role", urlRole);
 }
 
-let role = localStorage.getItem("role") || "";
+let role = localStorage.getItem("role") || "remote";
 
 if (!role) {
   // Лендинг — ждём клика по «Жерло» или «Пульт»
@@ -246,23 +246,47 @@ function startApp() {
         );
         playSound();
       });
-
-    const menuBtn = document.getElementById("menuBtn");
-    const menu = document.getElementById("menu");
-
-    menuBtn.addEventListener("click", () => {
-      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
-    });
-
-    document.getElementById("reloadBtn").addEventListener("click", () => {
-      location.reload();
-    });
-
-    document.getElementById("switchRoleBtn").addEventListener("click", () => {
-      localStorage.removeItem("role");
-      location.href = location.pathname;
-    });
   }
+
+  const menuBtn = document.getElementById("menuBtn");
+  const menu = document.getElementById("menu");
+  const roleRemoteBtn = document.getElementById("roleRemoteBtn");
+  const roleDisplayBtn = document.getElementById("roleDisplayBtn");
+  const clearCacheBtn = document.getElementById("clearCacheBtn");
+
+  function updateMenuButtons() {
+    const currentRole = role || "remote";
+    roleRemoteBtn.classList.toggle("active", currentRole === "remote");
+    roleDisplayBtn.classList.toggle("active", currentRole === "display");
+  }
+
+  menuBtn.addEventListener("click", () => {
+    menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    updateMenuButtons();
+  });
+
+  roleRemoteBtn.addEventListener("click", () => {
+    if (role === "remote") {
+      menu.style.display = "none";
+      return;
+    }
+    localStorage.setItem("role", "remote");
+    location.reload();
+  });
+
+  roleDisplayBtn.addEventListener("click", () => {
+    if (role === "display") {
+      menu.style.display = "none";
+      return;
+    }
+    localStorage.setItem("role", "display");
+    location.reload();
+  });
+
+  clearCacheBtn.addEventListener("click", () => {
+    localStorage.removeItem("totalPredictions");
+    location.href = location.pathname;
+  });
 
   function connectToHost() {
     console.log("[oracle] подключаюсь к пульту…");

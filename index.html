@@ -18,24 +18,6 @@
       <source src="images/lava.mp4" type="video/mp4" />
     </video>
 
-    <!-- ЛЕНДИНГ: выбор роли при первом заходе -->
-    <div class="picker">
-      <h1>🌋 ЖЕРЛО СУДЬБЫ 🌋</h1>
-      <p>Выбери роль для этого устройства</p>
-      <div class="picker-buttons">
-        <button class="role-btn" data-role="display">
-          <span class="role-emoji">🌋</span>
-          ЖЕРЛО
-          <span class="role-hint">показ предсказаний</span>
-        </button>
-        <button class="role-btn" data-role="remote">
-          <span class="role-emoji">🎛</span>
-          ПУЛЬТ
-          <span class="role-hint">управление кнопкой</span>
-        </button>
-      </div>
-    </div>
-
     <!-- ЖЕРЛО -->
     <div class="frame idle visible" id="frame">
       <span id="predictionText">…жерло судьбы спит…</span>
@@ -45,6 +27,9 @@
     <div class="remote-panel">
       <h1>ОРАКУЛ</h1>
       <div class="status" id="status">Нет соединения — Оракул спит</div>
+      <div class="remote-hint">
+        Задайте волнующий Вас вопрос, оракул подскажет на него ответ.
+      </div>
       <button class="big" id="getPredictionBtn" disabled>
         ПОЛУЧИТЬ ПРЕДСКАЗАНИЕ
       </button>
@@ -54,11 +39,19 @@
     </div>
 
     <!-- Сменить роль (видна в режимах display/remote) -->
-    <button class="menu-btn" id="menuBtn">⋯</button>
+    <button class="menu-btn" id="menuBtn">
+      <img src="images/more-horizontal.svg" alt="menu" />
+    </button>
 
     <div class="menu" id="menu">
-      <button id="switchRoleBtn">сменить роль</button>
-      <button id="reloadBtn">перезагрузить</button>
+      <div class="menu-title">Смена роли</div>
+      <button class="menu-option" data-role="display" id="roleDisplayBtn">
+        ОРАКУЛ
+      </button>
+      <button class="menu-option" data-role="remote" id="roleRemoteBtn">
+        ПУЛЬТ
+      </button>
+      <button class="menu-clear" id="clearCacheBtn">очистить кэш</button>
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
