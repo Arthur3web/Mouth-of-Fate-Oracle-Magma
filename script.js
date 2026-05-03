@@ -19,7 +19,7 @@ if (urlRole === "display" || urlRole === "remote") {
   localStorage.setItem("role", urlRole);
 }
 
-let role = localStorage.getItem("role") || "display";
+let role = localStorage.getItem("role") || "remote";
 
 if (!role) {
   // Лендинг — ждём клика по «Жерло» или «Пульт»
