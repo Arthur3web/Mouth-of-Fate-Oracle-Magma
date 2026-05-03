@@ -60,21 +60,19 @@ body {
 /* ---------- ЖЕРЛО (показ на планшете) ---------- */
 .frame {
   display: none;
-  background: rgba(20, 14, 8, 0.55);
-  backdrop-filter: blur(3px) saturate(1.2);
-  -webkit-backdrop-filter: blur(3px) saturate(1.2);
-  border: clamp(3px, 0.3vw, 6px) solid #000;
-  border-radius: clamp(20px, 1.8vw, 36px);
-  padding: clamp(24px, 3vw, 60px) clamp(28px, 4vw, 80px);
-  max-width: 78vw;
-  text-align: center;
-  color: #f5e9d6;
-  font-size: clamp(1.6rem, 4vw, 3.2rem);
-  line-height: 1.45;
-  white-space: pre-line;
-  box-shadow:
-    inset 0 0 80px rgba(0, 0, 0, 0.55),
-    0 12px 50px rgba(0, 0, 0, 0.6);
+  width: min(1567px, 78vw);
+  min-height: min(381px, 30vw);
+  border-radius: min(300px, 30vw);
+  background: #000000b2;
+  color: #ffffff;
+  font-family: "BaskervilleCustom", serif;
+  font-weight: 300;
+  font-size: clamp(1.8rem, 10vw, 112px);
+  line-height: 1.4;
+  letter-spacing: 0%;
+  padding: clamp(20px, 2vw, 40px);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   opacity: 0;
   transform: scale(0.95);
   transition:
@@ -83,7 +81,9 @@ body {
 }
 
 body.mode-display .frame {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .frame.visible {
@@ -91,16 +91,9 @@ body.mode-display .frame {
   transform: scale(1);
 }
 
-.frame.idle {
-  opacity: 0.35;
-  font-style: italic;
-  font-size: clamp(1rem, 2.2vw, 1.5rem);
-}
-
 /* ---------- ПУЛЬТ (ноутбук) ---------- */
 
 body.mode-remote {
-  display: block;
   background-image: url("images/icon-1.png");
   background-size: cover;
   background-position: center;
@@ -113,11 +106,13 @@ body.mode-remote .lava-bg {
 
 .remote-panel {
   display: none;
-  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 body.mode-remote .remote-panel {
-  display: block;
+  display: flex;
 }
 
 .remote-panel h1 {
@@ -128,12 +123,12 @@ body.mode-remote .remote-panel {
   text-transform: uppercase;
   letter-spacing: 0;
   margin: clamp(32px, 15.6vw, 320px) 0 0 0;
+  width: min(1040px, 90vw);
 }
 
 button.big {
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
-  font-style: Light;
   font-size: clamp(1.125rem, 2.35vw, 48px);
   line-height: 1.25;
   letter-spacing: 0;
@@ -152,8 +147,8 @@ button.big {
 }
 
 button.big:active {
-  transform: translateY(3px);
-  box-shadow: 0 3px 0 #722f0a;
+  background: #adadad;
+  transform: translateY(2px);
 }
 
 button.big:disabled {
@@ -171,6 +166,7 @@ button.big:disabled {
   text-align: center;
   margin-bottom: clamp(32px, 7.8vw, 160px);
   width: min(1624px, 92vw);
+  height: min(184px, 18vw);
 }
 
 .counter {
@@ -182,6 +178,12 @@ button.big:disabled {
   text-align: center;
   opacity: 0.85;
   margin-bottom: clamp(24px, 4.9vw, 100px);
+  width: min(1624px, 92vw);
+  height: min(78px, 8vw);
+}
+
+body.mode-remote .counter {
+  display: block;
 }
 
 .status {
@@ -192,6 +194,8 @@ button.big:disabled {
   line-height: 1.6;
   letter-spacing: 0;
   text-align: center;
+  width: min(692px, 90vw);
+  height: min(78px, 8vw);
 
   opacity: 0.85;
   color: #ff7a1b;

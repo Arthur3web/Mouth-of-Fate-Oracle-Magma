@@ -181,11 +181,11 @@ function startApp() {
   function setOracleStatus(state) {
     // state: 'no-connection', 'connected', 'ready'
     if (state === "no-connection") {
-      setStatus("Нет соединения — Оракул спит", "err");
+      setStatus("Оракул спит...", "err");
     } else if (state === "connected") {
-      setStatus("Есть соединение — Оракул проснулся", "ok");
+      setStatus("Оракул проснулся...", "ok");
     } else if (state === "ready") {
-      setStatus("Готов к работе — Оракул ждёт гостя", "ok");
+      setStatus("Оракул ждёт гостя в тишине", "ok");
     }
   }
 
@@ -212,7 +212,7 @@ function startApp() {
       console.log("[oracle] пульт не в сети — жду…");
       setTimeout(connectToHost, 3000);
     } else if (role === "remote") {
-      setStatus("ошибка: " + err.type, "err");
+      setOracleStatus("no-connection");
     }
   });
 
@@ -245,7 +245,7 @@ function startApp() {
       .addEventListener("click", () => {
         const openConns = Array.from(liveConns).filter((c) => c.open);
         if (openConns.length === 0) {
-          setStatus("жерло ещё не готово…", "err");
+          setOracleStatus("no-connection");
           return;
         }
         const nextCount = totalPredictions + 1;
