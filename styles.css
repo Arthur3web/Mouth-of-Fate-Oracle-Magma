@@ -60,19 +60,24 @@ body {
 /* ---------- ЖЕРЛО (показ на планшете) ---------- */
 .frame {
   display: none;
-  width: min(1567px, 78vw);
-  min-height: min(381px, 30vw);
+  width: min(1567px, 90vw);
+  max-width: 90vw;
+  min-height: clamp(240px, 25vw, 360px);
+  max-height: 72vh;
   border-radius: min(300px, 30vw);
   background: #000000b2;
   color: #ffffff;
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
-  font-size: clamp(1.8rem, 10vw, 112px);
-  line-height: 1.4;
+  font-size: clamp(1rem, 6vw, 112px);
+  line-height: 1.25;
   letter-spacing: 0%;
-  padding: clamp(20px, 2vw, 40px);
+  padding: clamp(20px, 4vw, 44px);
+  white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  text-align: center;
+  overflow-y: auto;
   opacity: 0;
   transform: scale(0.95);
   transition:
@@ -84,6 +89,7 @@ body.mode-display .frame {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* backdrop-filter: blur(6px); */
 }
 
 .frame.visible {
@@ -314,6 +320,7 @@ body.mode-remote .switch-role {
 .menu-option.active {
   background: #ffffff;
   color: #111;
+  font-weight: 300;
 }
 
 .menu-clear {
