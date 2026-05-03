@@ -57,13 +57,6 @@ body {
   z-index: -1;
 }
 
-body[data-role="display"] .remote-panel {
-  display: none;
-}
-body[data-role="remote"] .frame {
-  display: none;
-}
-
 /* ---------- ЖЕРЛО (показ на планшете) ---------- */
 .frame {
   display: none;

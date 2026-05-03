@@ -32,7 +32,7 @@ if (!role) {
     });
   });
 } else {
-  document.body.dataset.role = role;
+  document.body.className = "mode-" + role;
   startApp();
 }
 
