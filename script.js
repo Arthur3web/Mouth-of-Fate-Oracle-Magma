@@ -22,7 +22,7 @@ if (urlRole === "display" || urlRole === "remote") {
 let role = localStorage.getItem("role") || "remote";
 
 if (!role) {
-  // Лендинг — ждём клика по «Жерло» или «Пульт»
+  // Лендинг — ждём клика по «Вулкан» или «Пульт»
   document.body.className = "mode-picker";
   document.querySelectorAll(".role-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -190,7 +190,7 @@ function startApp() {
   }
 
   // ----- PeerJS -----
-  // Пульт = хост, Жерло = клиент. Оба знают фиксированный hostId по ROOM.
+  // Пульт = хост, Вулкан = клиент. Оба знают фиксированный hostId по ROOM.
   const hostId = `mof-oracle-${ROOM}-host`;
   const myId =
     role === "remote"
@@ -217,7 +217,7 @@ function startApp() {
   });
 
   if (role === "remote") {
-    // === ПУЛЬТ: хост, кнопка, ждёт жерла ===
+    // === ПУЛЬТ: хост, кнопка, ждёт вулкан ===
     peer.on("open", () => {
       setOracleStatus("no-connection");
     });
@@ -344,40 +344,6 @@ function startApp() {
     });
   }
 }
-
-// ============ ВИДЕО-ФОН ============
-(function setupLavaVideo() {
-  const v = document.querySelector(".lava-bg");
-  if (!v) return;
-  v.addEventListener("loadeddata", () =>
-    console.log("[oracle] видео: данные загружены"),
-  );
-  v.addEventListener("canplay", () =>
-    console.log("[oracle] видео: готово к проигрыванию"),
-  );
-  v.addEventListener("playing", () => console.log("[oracle] видео: играет"));
-  v.addEventListener("error", () => {
-    const e = v.error;
-    console.error(
-      "[oracle] видео ошибка:",
-      e ? `code=${e.code} ${e.message}` : "(unknown)",
-    );
-  });
-  v.addEventListener("stalled", () => console.warn("[oracle] видео: stalled"));
-  const tryPlay = () =>
-    v.play().then(
-      () => {},
-      (err) => console.warn("[oracle] play() отклонён:", err && err.message),
-    );
-  tryPlay();
-  // если браузер блокирует autoplay — стартуем по первому клику/тапу
-  const wake = () => tryPlay();
-  document.addEventListener("click", wake, { once: true });
-  document.addEventListener("touchstart", wake, {
-    once: true,
-    passive: true,
-  });
-})();
 
 // ============ SERVICE WORKER ============
 // Когда обновляется код, новый SW делает skipWaiting + clients.claim,
