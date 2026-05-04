@@ -124,11 +124,11 @@ body.mode-remote .remote-panel {
 .remote-panel h1 {
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
-  font-size: clamp(2rem, 7vw, 156px);
+  font-size: clamp(2rem, min(7vw, 14vh), 156px);
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0;
-  margin: clamp(8px, 1.6vw, 64px) 0 0 0;
+  margin: clamp(8px, max(3vw, 6vh), 100px) 0 0 0;
   width: min(1040px, 90vw);
 }
 
@@ -143,10 +143,10 @@ button.big {
   background: #ff7a1b;
   color: #111;
   width: clamp(220px, 28vw, 580px);
-  height: clamp(64px, 8.8vw, 180px);
+  height: clamp(64px, min(8.8vw, 14vh), 180px);
   border-radius: 300px;
   opacity: 1;
-  margin-bottom: clamp(40px, 10vw, 204px);
+  margin-bottom: clamp(40px, min(10vw, 8vh), 204px);
   transition:
     transform 0.05s linear,
     box-shadow 0.05s linear;
@@ -172,11 +172,11 @@ button.big:disabled:active {
 .remote-hint {
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
-  font-size: clamp(1rem, 3vw, 80px);
+  font-size: clamp(1rem, min(3vw, 5vh), 80px);
   line-height: 1.25;
   letter-spacing: 0;
   text-align: center;
-  margin-bottom: clamp(24px, 6vw, 160px);
+  margin-bottom: clamp(24px, min(6vw, 8vh), 160px);
   width: min(1624px, 92vw);
 }
 
@@ -188,7 +188,7 @@ button.big:disabled:active {
   letter-spacing: 0;
   text-align: center;
   opacity: 0.85;
-  margin-bottom: clamp(24px, 4.9vw, 100px);
+  margin-bottom: clamp(24px, min(4.9vw, 7vh), 100px);
   width: min(1624px, 92vw);
   height: min(78px, 8vw);
 }
