@@ -1,4 +1,4 @@
-const CACHE = 'oracle-v19';
+const CACHE = 'oracle-v21';
 const PRECACHE = [
   './',
   './index.html',
@@ -8,7 +8,6 @@ const PRECACHE = [
   './images/icon-1.png',
   './images/icon-192.svg',
   './images/icon-512.svg',
-  './images/Magma.gif',
 ];
 const CDN_LIBS = [
   'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js',
@@ -43,7 +42,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
   // видео и аудио всегда напрямую с сервера — Range-запросы и SW-кеш не дружат
-  if (req.destination === 'audio') return;
+  if (req.destination === 'audio' || req.destination === 'video') return;
   e.respondWith(
     (async () => {
       const cached = await caches.match(req);
