@@ -116,7 +116,7 @@ body.mode-remote .lava-bg {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  zoom: 0.8;
+  zoom: 0.9;
 }
 
 body.mode-remote .remote-panel {
