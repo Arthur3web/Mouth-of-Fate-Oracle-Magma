@@ -209,7 +209,7 @@ body.mode-remote .counter {
   text-align: center;
   width: min(692px, 90vw);
   height: min(78px, 8vw);
-  margin-bottom: clamp(33px, 3.34vw, 50px);
+  margin-bottom: calc(clamp(33px, 3.34vw, 50px) + clamp(70px, 6vw, 140px));
 
   opacity: 0.85;
   color: #ff7a1b;
