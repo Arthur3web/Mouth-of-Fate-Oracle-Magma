@@ -250,6 +250,7 @@ body.mode-remote .counter {
   border-radius: clamp(24px, 2.4vw, 50px);
   align-items: center;
   z-index: 25;
+  zoom: 0.67;
 }
 
 .menu-title {
