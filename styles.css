@@ -185,14 +185,14 @@ button.big:disabled:active {
 .counter {
   font-family: "BaskervilleCustom", serif;
   font-weight: 300;
-  font-size: clamp(1rem, 2.35vw, 48px);
+  font-size: clamp(0.8rem, 1.8vw, 36px);
   line-height: 1.6;
   letter-spacing: 0;
   text-align: center;
   opacity: 0.85;
+  margin-top: clamp(40px, 4vw, 80px);
   margin-bottom: clamp(24px, min(4.9vw, 7vh), 100px);
   width: min(1624px, 92vw);
-  height: min(78px, 8vw);
 }
 
 body.mode-remote .counter {
