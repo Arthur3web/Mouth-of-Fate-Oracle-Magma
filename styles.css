@@ -130,7 +130,7 @@ body.mode-remote .remote-panel {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0;
-  margin: clamp(8px, max(3vw, 6vh), 100px) 0 0 0;
+  margin: calc(clamp(8px, max(3vw, 6vh), 100px) + clamp(45px, 4vw, 70px)) 0 0 0;
   width: min(1040px, 90vw);
 }
 
